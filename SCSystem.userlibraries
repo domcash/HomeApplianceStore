@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="sqlite-jdbc-3.40.0.0">
+    <archive path="/Users/domcash/IdeaProjects/SCSystem/sqlite-jdbc-3.40.0.0.jar" />
+  </library>
+  <library name="jbcrypt-0.4">
+    <archive path="/Users/domcash/IdeaProjects/SCSystem/jbcrypt-0.4.jar" />
+  </library>
+  <library name="json-20240303">
+    <archive path="/Users/domcash/IdeaProjects/SCSystem/json-20240303.jar" />
+  </library>
+</eclipse-userlibraries>
+

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inherit-compiler-output="true" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/out/test/HomeApplianceStore"/>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="byte-buddy-1.15.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/byte-buddy-1.15.4.jar!/"/>
+	</lib>
+	<lib name="byte-buddy-agent-1.15.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/byte-buddy-agent-1.15.4.jar!/"/>
+	</lib>
+	<lib name="jbcrypt-0.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/jbcrypt-0.4.jar!/"/>
+	</lib>
+	<lib name="json-20240303.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/json-20240303.jar!/"/>
+	</lib>
+	<lib name="mockito-core-5.14.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/mockito-core-5.14.2.jar!/"/>
+	</lib>
+	<lib name="objenesis-3.3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/objenesis-3.3.jar!/"/>
+	</lib>
+	<lib name="sqlite-jdbc-3.40.0.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/sqlite-jdbc-3.40.0.0.jar!/"/>
+	</lib>
+</component>

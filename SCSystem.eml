@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inherit-compiler-output="true" inheritJdk="true">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<levels>
+		<level name="sqlite-jdbc-3.40.0.0" value="project"/>
+		<level name="jbcrypt-0.4" value="project"/>
+		<level name="json-20240303" value="project"/>
+	</levels>
+</component>
