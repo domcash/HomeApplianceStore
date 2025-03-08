@@ -1,4 +1,4 @@
-import java.util.ArrayList;	
+import java.util.ArrayList;
 import java.util.List;
 
 //Dominic Cash
@@ -21,7 +21,7 @@ public class ShoppingBasket {
 
     /**
      * Adds a home appliance item to the shopping basket.
-     * 
+     *
      * @param item the home appliance to add
      */
     public void addItem(HomeAppliance item) {
@@ -30,7 +30,7 @@ public class ShoppingBasket {
 
     /**
      * Retrieves the list of home appliances in the shopping basket.
-     * 
+     *
      * @return the list of items in the basket
      */
     public List<HomeAppliance> getItems() {
@@ -39,7 +39,7 @@ public class ShoppingBasket {
 
     /**
      * Calculates the total price of all items in the shopping basket.
-     * 
+     *
      * @return the total price of items in the basket
      */
     public int getTotalPrice() {

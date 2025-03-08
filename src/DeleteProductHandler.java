@@ -1,14 +1,3 @@
-import com.sun.net.httpserver.HttpHandler;	
-import com.sun.net.httpserver.HttpExchange;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-//Dominic Cash
-//16042439
-
 /**
  * The {@code DeleteProductHandler} class handles HTTP requests for deleting products.
  * It supports:
@@ -17,13 +6,22 @@ import java.util.Map;
  *
  * This class interacts with the {@link HomeApplianceDAO} to retrieve and delete product details
  * and uses the {@link Controller#parseQueryParams(String)} method for parsing HTTP query parameters.
+ *
  * Dependencies:
- * @link HomeApplianceDAO}
- * @link HomeAppliance}
+ * {@link HomeApplianceDAO}
+ * {@link HomeAppliance}
  * {@link Controller}
  *
  * @author Dominic Cash
  */
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 public class DeleteProductHandler implements HttpHandler {
 
     private HomeApplianceDAO applianceDAO = new HomeApplianceDAO();
@@ -74,20 +72,83 @@ public class DeleteProductHandler implements HttpHandler {
      */
     private void showConfirmationPage(HttpExchange exchange, HomeAppliance appliance) throws IOException {
         String response = String.format("""
-        <html>
-        <head><title>Delete Product</title></head>
-        <body>
-            <h1>You have selected '%s' to delete. Are you sure?</h1>
-            <form method="POST" action="/deleteProduct">
-                <input type="hidden" name="id" value="%d" />
-                <button type="submit">Yes, Delete</button>
-            </form>
-            <form method="GET" action="/adminPanel">
-                <button type="submit">No, Cancel</button>
-            </form>
-        </body>
-        </html>
-    """, appliance.getDescription(), appliance.getId());
+            <html>
+            <head>
+                <title>Home Solutions - Delete Product</title>
+                <meta charset='UTF-8'>
+                <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap' rel='stylesheet'>
+                <style>
+                    body {
+                        font-family: 'Poppins', sans-serif;
+                        background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+                        margin: 0;
+                        padding: 0;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 600px;
+                        margin: 100px auto;
+                        padding: 20px;
+                        background: #fff;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                        animation: fadeIn 1s ease-in;
+                        text-align: center;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    h1 {
+                        color: #2c3e50;
+                        font-size: 2em;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        margin-bottom: 20px;
+                    }
+                    form {
+                        display: inline-block;
+                        margin: 10px;
+                    }
+                    .btn {
+                        background: #2ecc71;
+                        color: white;
+                        padding: 12px 25px;
+                        text-align: center;
+                        border: none;
+                        cursor: pointer;
+                        text-decoration: none;
+                        display: inline-block;
+                        border-radius: 25px;
+                        font-weight: 600;
+                        transition: transform 0.2s, background 0.3s;
+                    }
+                    .btn:hover {
+                        background: #27ae60;
+                        transform: translateY(-2px);
+                    }
+                    .btn.cancel {
+                        background: #e74c3c;
+                    }
+                    .btn.cancel:hover {
+                        background: #c0392b;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>You have selected '%s' to delete. Are you sure?</h1>
+                    <form method="POST" action="/deleteProduct">
+                        <input type="hidden" name="id" value="%d" />
+                        <button type="submit" class="btn">Yes, Delete</button>
+                    </form>
+                    <form method="GET" action="/adminPanel">
+                        <button type="submit" class="btn cancel">No, Cancel</button>
+                    </form>
+                </div>
+            </body>
+            </html>
+        """, appliance.getDescription(), appliance.getId());
 
         exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
         exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
@@ -98,12 +159,16 @@ public class DeleteProductHandler implements HttpHandler {
     }
 
     /**
-     * Mocked method to check login status.
+     * Checks whether the user is logged in by inspecting the session cookie.
      *
-     * @param exchange the {@link HttpExchange} object containing the request and response
+     * @param exchange the {@link HttpExchange} object containing the request headers
      * @return {@code true} if the user is logged in; {@code false} otherwise
      */
     private boolean checkLoginStatus(HttpExchange exchange) {
-        return true;
+        String cookieHeader = exchange.getRequestHeaders().getFirst("Cookie");
+        if (cookieHeader != null && cookieHeader.contains("session=")) {
+            return true;
+        }
+        return false; // Updated to properly check login status
     }
 }

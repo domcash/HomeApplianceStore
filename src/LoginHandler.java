@@ -1,4 +1,16 @@
-import com.sun.net.httpserver.HttpExchange;	
+/**
+ * The {@code LoginHandler} class handles user login requests, providing functionality for
+ * displaying a login form, processing login credentials, and authenticating users against a
+ * SQLite database. Successful login attempts set a session cookie, and failed attempts return
+ * an appropriate error message.
+ *
+ * The handler supports both GET and POST methods:
+ * GET: Displays the login form.
+ * POST: Processes login credentials and validates them against the database.
+ *
+ * @author Dominic Cash
+ */
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.*;
 import java.net.URLDecoder;
@@ -8,30 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.mindrot.jbcrypt.BCrypt;
 
-//Dominic Cash
-//16042439
-
-/**
- * The {@code LoginHandler} class handles user login requests, providing functionality for
- * displaying a login form, processing login credentials, and authenticating users against a
- * SQLite database. Successful login attempts set a session cookie, and failed attempts return
- * an appropriate error message.
- * 
- * The handler supports both GET and POST methods:
- * 
- * GET: Displays the login form.
- * POST: Processes login credentials and validates them against the database.
- * 
- *
- * Example usage:
- * 
- * LoginHandler handler = new LoginHandler();
- * handler.handle(exchange);
- * 
- * 
- *
- * @author Dominic Cash
- */
 public class LoginHandler implements HttpHandler {
 
     /**
@@ -50,7 +38,7 @@ public class LoginHandler implements HttpHandler {
         } else if ("POST".equalsIgnoreCase(method)) {
             processLogin(exchange);
         } else {
-            exchange.sendResponseHeaders(405, -1); 
+            exchange.sendResponseHeaders(405, -1);
         }
     }
 
@@ -64,18 +52,76 @@ public class LoginHandler implements HttpHandler {
         String response = """
             <html>
             <head>
-                <title>Admin Login</title>
+                <title>Home Solutions - Admin Login</title>
+                <meta charset='UTF-8'>
+                <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap' rel='stylesheet'>
                 <style>
-                    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-                    .container { max-width: 400px; margin: 100px auto; padding: 20px; background-color: #f4f4f4; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-                    input { width: 100%; padding: 10px; margin: 10px 0; }
-                    .btn { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; width: 100%; }
-                    .btn:hover { background-color: #45a049; }
+                    body {
+                        font-family: 'Poppins', sans-serif;
+                        background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+                        margin: 0;
+                        padding: 0;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 400px;
+                        margin: 100px auto;
+                        padding: 20px;
+                        background: #fff;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                        animation: fadeIn 1s ease-in;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    h2 {
+                        text-align: center;
+                        color: #2c3e50;
+                        font-size: 2em;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        margin-bottom: 20px;
+                    }
+                    input[type='text'], input[type='password'] {
+                        width: 100%;
+                        padding: 12px;
+                        margin: 10px 0;
+                        border-radius: 8px;
+                        border: 1px solid #ddd;
+                        font-size: 1em;
+                        background: #fafafa;
+                        box-sizing: border-box;
+                        transition: border-color 0.3s;
+                    }
+                    input[type='text']:focus, input[type='password']:focus {
+                        border-color: #3498db;
+                        outline: none;
+                    }
+                    .btn {
+                        background: #2ecc71;
+                        color: white;
+                        padding: 12px 25px;
+                        text-align: center;
+                        border: none;
+                        cursor: pointer;
+                        text-decoration: none;
+                        display: block;
+                        width: 100%;
+                        border-radius: 25px;
+                        font-weight: 600;
+                        transition: transform 0.2s, background 0.3s;
+                    }
+                    .btn:hover {
+                        background: #27ae60;
+                        transform: translateY(-2px);
+                    }
                 </style>
             </head>
             <body>
                 <div class="container">
-                    <h2>Login</h2>
+                    <h2>Admin Login</h2>
                     <form action="/login" method="POST">
                         <input type="text" name="username" placeholder="Username" required />
                         <input type="password" name="password" placeholder="Password" required />
@@ -113,15 +159,68 @@ public class LoginHandler implements HttpHandler {
         boolean isAuthenticated = authenticateUser(username, password);
 
         if (isAuthenticated) {
-            String sessionCookie = "session=" + username + "; Path=/; HttpOnly"; 
+            String sessionCookie = "session=" + username + "; Path=/; HttpOnly";
             exchange.getResponseHeaders().set("Set-Cookie", sessionCookie);
 
             String response = """
                 <html>
-                <head><title>Login Success</title></head>
+                <head>
+                    <title>Home Solutions - Login Success</title>
+                    <meta charset='UTF-8'>
+                    <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap' rel='stylesheet'>
+                    <style>
+                        body {
+                            font-family: 'Poppins', sans-serif;
+                            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+                            margin: 0;
+                            padding: 0;
+                            color: #333;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 100px auto;
+                            padding: 20px;
+                            background: #fff;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                            animation: fadeIn 1s ease-in;
+                            text-align: center;
+                        }
+                        @keyframes fadeIn {
+                            from { opacity: 0; }
+                            to { opacity: 1; }
+                        }
+                        h1 {
+                            color: #2c3e50;
+                            font-size: 2em;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            margin-bottom: 20px;
+                        }
+                        .btn {
+                            background: #2ecc71;
+                            color: white;
+                            padding: 12px 25px;
+                            text-align: center;
+                            border: none;
+                            cursor: pointer;
+                            text-decoration: none;
+                            display: inline-block;
+                            border-radius: 25px;
+                            font-weight: 600;
+                            transition: transform 0.2s, background 0.3s;
+                        }
+                        .btn:hover {
+                            background: #27ae60;
+                            transform: translateY(-2px);
+                        }
+                    </style>
+                </head>
                 <body>
-                    <h1>Welcome, %s!</h1>
-                    <p><a href="/adminPanel" >Go to Admin Panel</a></p>
+                    <div class="container">
+                        <h1>Welcome, %s!</h1>
+                        <p><a href="/adminPanel" class="btn">Go to Admin Panel</a></p>
+                    </div>
                 </body>
                 </html>
             """.formatted(username);
@@ -135,10 +234,63 @@ public class LoginHandler implements HttpHandler {
         } else {
             String response = """
                 <html>
-                <head><title>Login Failed</title></head>
+                <head>
+                    <title>Home Solutions - Login Failed</title>
+                    <meta charset='UTF-8'>
+                    <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap' rel='stylesheet'>
+                    <style>
+                        body {
+                            font-family: 'Poppins', sans-serif;
+                            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+                            margin: 0;
+                            padding: 0;
+                            color: #333;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 100px auto;
+                            padding: 20px;
+                            background: #fff;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                            animation: fadeIn 1s ease-in;
+                            text-align: center;
+                        }
+                        @keyframes fadeIn {
+                            from { opacity: 0; }
+                            to { opacity: 1; }
+                        }
+                        h1 {
+                            color: #2c3e50;
+                            font-size: 2em;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            margin-bottom: 20px;
+                        }
+                        .btn {
+                            background: #2ecc71;
+                            color: white;
+                            padding: 12px 25px;
+                            text-align: center;
+                            border: none;
+                            cursor: pointer;
+                            text-decoration: none;
+                            display: inline-block;
+                            border-radius: 25px;
+                            font-weight: 600;
+                            transition: transform 0.2s, background 0.3s;
+                        }
+                        .btn:hover {
+                            background: #27ae60;
+                            transform: translateY(-2px);
+                        }
+                    </style>
+                </head>
                 <body>
-                    <h1>Invalid Username or Password</h1>
-                    <p><a href="/login">Back to Login</a></p>
+                    <div class="container">
+                        <h1>Invalid Username or Password</h1>
+                        <p><a href="/login" class="btn">Back to Login</a></p>
+                    </div>
                 </body>
                 </html>
             """;
@@ -194,9 +346,9 @@ public class LoginHandler implements HttpHandler {
 
             if (rs.next()) {
                 String storedHash = rs.getString("password");
-                return BCrypt.checkpw(password, storedHash); 
+                return BCrypt.checkpw(password, storedHash);
             } else {
-                return false; 
+                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
