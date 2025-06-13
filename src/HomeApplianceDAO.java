@@ -1,10 +1,9 @@
-import java.sql.Connection;	
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ import java.util.Map;
  */
 public class HomeApplianceDAO {
 
-    private static final String URL = "jdbc:sqlite:stores.sqlite"; 
+    private static final String URL = "jdbc:sqlite:stores.sqlite";
 
     /**
      * Establishes a connection to the SQLite database.
@@ -114,7 +113,7 @@ public class HomeApplianceDAO {
                         rs.getString("category"),
                         rs.getInt("price")
                 );
-                appliance.setId(rs.getInt("id")); 
+                appliance.setId(rs.getInt("id"));
                 appliances.add(appliance);
             }
         } catch (SQLException e) {
@@ -176,13 +175,57 @@ public class HomeApplianceDAO {
      */
     public List<HomeAppliance> getProductsByCategoryAndPriceRange(String category, String priceRange) {
         List<HomeAppliance> appliances = new ArrayList<>();
+        System.out.println("Received priceRange: '" + priceRange + "' for category: " + category);
+        String query;
+        Integer minPrice = null;
+        Integer maxPrice = null;
 
-        String query = "SELECT * FROM appliance WHERE category = ? AND " + buildPriceRangeQuery(priceRange);
+        switch (priceRange) {
+            case "0-50":
+                minPrice = 0;
+                maxPrice = 50;
+                query = "SELECT * FROM appliance WHERE category = ? AND price >= ? AND price <= ?";
+                break;
+            case "51-100":
+                minPrice = 51;
+                maxPrice = 100;
+                query = "SELECT * FROM appliance WHERE category = ? AND price >= ? AND price <= ?";
+                break;
+            case "101-200":
+                minPrice = 101;
+                maxPrice = 200;
+                query = "SELECT * FROM appliance WHERE category = ? AND price >= ? AND price <= ?";
+                break;
+            case "201-500":
+                minPrice = 201;
+                maxPrice = 500;
+                query = "SELECT * FROM appliance WHERE category = ? AND price >= ? AND price <= ?";
+                break;
+            case "501-1000":
+                minPrice = 501;
+                maxPrice = 1000;
+                query = "SELECT * FROM appliance WHERE category = ? AND price >= ? AND price <= ?";
+                break;
+            case "1001+":
+            case "1001": // Fallback for incorrect front-end value
+                minPrice = 1001;
+                query = "SELECT * FROM appliance WHERE category = ? AND price >= ?";
+                break;
+            default:
+                System.err.println("Invalid price range: '" + priceRange + "'");
+                return appliances;
+        }
 
-        try (Connection conn = DriverManager.getConnection(URL);
+        System.out.println("Executing query for category: " + category + ", price range: " + priceRange);
+
+        try (Connection conn = connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, category);
+            stmt.setInt(2, minPrice);
+            if (!priceRange.equals("1001+") && !priceRange.equals("1001")) {
+                stmt.setInt(3, maxPrice);
+            }
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -196,9 +239,10 @@ public class HomeApplianceDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving products: " + e.getMessage());
+            System.err.println("Error retrieving products by category and price: " + e.getMessage());
         }
 
+        System.out.println("Found " + appliances.size() + " products for category: " + category + ", price range: " + priceRange);
         return appliances;
     }
 
@@ -210,14 +254,56 @@ public class HomeApplianceDAO {
      */
     public List<HomeAppliance> getProductsByPriceRange(String priceRange) {
         List<HomeAppliance> appliances = new ArrayList<>();
-        String query = "SELECT * FROM appliance ";
+        System.out.println("Received priceRange: '" + priceRange + "'");
+        String query;
+        Integer minPrice = null;
+        Integer maxPrice = null;
 
-        String priceCondition = buildPriceRangeQuery(priceRange);
+        switch (priceRange) {
+            case "0-50":
+                minPrice = 0;
+                maxPrice = 50;
+                query = "SELECT * FROM appliance WHERE price >= ? AND price <= ?";
+                break;
+            case "51-100":
+                minPrice = 51;
+                maxPrice = 100;
+                query = "SELECT * FROM appliance WHERE price >= ? AND price <= ?";
+                break;
+            case "101-200":
+                minPrice = 101;
+                maxPrice = 200;
+                query = "SELECT * FROM appliance WHERE price >= ? AND price <= ?";
+                break;
+            case "201-500":
+                minPrice = 201;
+                maxPrice = 500;
+                query = "SELECT * FROM appliance WHERE price >= ? AND price <= ?";
+                break;
+            case "501-1000":
+                minPrice = 501;
+                maxPrice = 1000;
+                query = "SELECT * FROM appliance WHERE price >= ? AND price <= ?";
+                break;
+            case "1001+":
+            case "1001": // Fallback for incorrect front-end value
+                minPrice = 1001;
+                query = "SELECT * FROM appliance WHERE price >= ?";
+                break;
+            default:
+                System.err.println("Invalid price range: '" + priceRange + "'");
+                return appliances;
+        }
 
-        query += "WHERE " + priceCondition;
+        System.out.println("Executing query for price range: " + priceRange);
 
-        try (Connection conn = DriverManager.getConnection(URL);
+        try (Connection conn = connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, minPrice);
+            if (!priceRange.equals("1001+") && !priceRange.equals("1001")) {
+                stmt.setInt(2, maxPrice);
+            }
 
             ResultSet rs = stmt.executeQuery();
 
@@ -232,27 +318,11 @@ public class HomeApplianceDAO {
                 appliances.add(appliance);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error retrieving products by price: " + e.getMessage());
         }
+
+        System.out.println("Found " + appliances.size() + " products for price range: " + priceRange);
         return appliances;
-    }
-
-    /**
-     * Builds an SQL query string based on the provided price range.
-     *
-     * @param priceRange the price range to filter products by
-     * @return the SQL fragment for filtering by price range
-     */
-    private String buildPriceRangeQuery(String priceRange) {
-        Map<String, String> priceRanges = new HashMap<>();
-        priceRanges.put("0-50", "price BETWEEN 0 AND 50");
-        priceRanges.put("51-100", "price BETWEEN 51 AND 100");
-        priceRanges.put("101-200", "price BETWEEN 101 AND 200");
-        priceRanges.put("201-500", "price BETWEEN 201 AND 500");
-        priceRanges.put("501-1000", "price BETWEEN 501 AND 1000");
-        priceRanges.put("1001+", "price > 1000");
-
-        return priceRanges.getOrDefault(priceRange, "price >= 0");
     }
 
     /**
@@ -358,13 +428,7 @@ public class HomeApplianceDAO {
         } catch (SQLException e) {
             System.out.println("Error deleting product: " + e.getMessage());
         }
-        
+
         return false;
     }
 }
-
-
-
-
-
-
